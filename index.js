@@ -1,10 +1,33 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const generateHTML = require("./generateHTML");
+const { create } = require("domain");
+
+function TeamManager(name, id, email, number){
+    this.name = name;
+    this.id = id;
+    this.email = email;
+    this.number = number;
+}
+
+function Engineer(name, id, email, number){
+    this.name = name;
+    this.id = id;
+    this.email = email;
+    this.number = number;
+}
+
+function Intern(name, id, email, number){
+    this.name = name;
+    this.id = id;
+    this.email = email;
+    this.number = number;
+}
 
 
 // Manager questions
-const questions = [
+function createManager() {
+    inquirer.prompt([
     {
         type: "input",
         message: "Please enter the team manager's name: ",
@@ -24,63 +47,61 @@ const questions = [
         type: "input",
         message: "Please enter the team manager's office number: ",
         name: "teamManagerNum"
-    }
-]
+    }])
+    .then((answers => {
+        const teamManager = new TeamManager(answers.teamManagerName, answers.teamManagerID, answers.teamManagerEmail, answers.teamManagerNum);
+        console.log(teamManager)
+        otherTeamMembers();
+    }))
+}
 
-// Engineer questions
-const questions2 = [
+// Questions for the engineer and intern
+function otherTeamMembers(){
+    inquirer.prompt([
     {
         type: "checkbox",
         message: "Do you have more employees to add?",
         choices: ["Engineer", "Intern", "No, I'm done"],
         name: "otherEmployees"
-    },
+    }])
+    .then((answer) => {
+        if(answer.otherEmployees === "Engineer"){
+            createEngineer();
+        }else if(answer.otherEmployees === "Intern"){
+            createIntern();
+        }else return
+    })
+}
+    
+    
+function createEngineer(){
+    inquirer.prompt([
     {
         type: "input",
         message: "Please enter the engineer's name: ",
         name: "engineerName",
-        when: (choice) => choice.otherEmployees[0] === "Engineer"
     },
     {
         type: "input",
         message: "Please enter the engineer's employee ID: ",
         name: "engineerID",
-        when: (choice) => choice.otherEmployees[0] === "Engineer"
     },
     {
         type: "input",
         message: "Please enter the engineer's email: ",
         name: "engineerEmail",
-        when: (choice) => choice.otherEmployees[0] === "Engineer"
     },
     {
         type: "input",
         message: "Please enter the engineer's office number: ",
         name: "engineerNum",
-        when: (choice) => choice.otherEmployees[0] === "Engineer"
-    },
-    {
-        type: "input",
-        message: "Please enter the intern's name: ",
-        name: "internName",
-        when: (choice) => choice.otherEmployees[0] === "Intern"
-    },
-    {
-        type: "input",
-        message: "Please enter the engineer's employee ID: ",
-        name: "internID",
-        when: (choice) => choice.otherEmployees[0] === "Intern"
-    },
-    {
-        type: "checkbox",
-        message: "Do you have more employees to add?",
-        choices: ["Intern", "No, I'm done"],
-        name: "otherEmployees2"
-    }
-]
+    }])
+}
 
-// Intern questions
-const questions3 = [
+
+
+function createIntern() {
+    inquirer.prompt([
     {
         type: "input",
         message: "Please enter the intern's name: ",
@@ -88,20 +109,21 @@ const questions3 = [
     },
     {
         type: "input",
-        message: "Please enter the engineer's employee ID: ",
-        name: "internID"
+        message: "Please enter the intern's employee ID: ",
+        name: "internID",
     },
     {
         type: "input",
-        message: "Please enter the engineer's email: ",
-        name: "internEmail"
+        message: "Please enter the intern's email: ",
+        name: "internEmail",
     },
     {
         type: "input",
-        message: "Please enter the engineer's office number: ",
-        name: "internNum"
-    },
-]
+        message: "Please enter the intern's office number: ",
+        name: "internNum",
+    }])
+}
+
 
 function writeToFile(fileName, data) {
     fs.writeFile(fileName, data, (err) =>
@@ -109,15 +131,8 @@ function writeToFile(fileName, data) {
 }
 
 function init() {
-    inquirer.prompt(questions)
-    .then((answers) => {
-        console.log(answers);
-        writeToFile(("./dist/test.html"), generateHTML(answers));
-    })
-    .then((answers2) => {
-        console.log(answers2);
-        writeToFile(("./dist/test.html"), generateHTML(answers2));
-    })
+    createManager();
+    writeToFile(("./dist/test.html"), generateHTML(answers2));
 }
 
-init()
+createManager()
