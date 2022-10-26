@@ -1,22 +1,15 @@
-function TeamManager(name, id, email, number){
-    this.name = name;
-    this.id = id;
-    this.email = email;
-    this.number = number;
-
-    this.managerCard = (manager) => {
-        return `<div class="card" style="width: 18rem;">
-        <div class="card-header">
-            ${manager.name}
-            Team Manager
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">${manager.id}</li>
-            <li class="list-group-item">${manager.email}</li>
-            <li class="list-group-item">${manager.number}</li>
-        </ul>
-    </div>`
-    }
+function managerCard(manager){
+    return `<div class="card" style="width: 18rem;">
+    <div class="card-header">
+        ${manager.name}
+        Manager
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">${manager.id}</li>
+        <li class="list-group-item">${manager.email}</li>
+        <li class="list-group-item">${manager.number}</li>
+    </ul>
+</div>`
 }
 
 function generateHTML(data) {
@@ -40,7 +33,7 @@ function generateHTML(data) {
             </div>
         </div>
     
-        ${new TeamManager(data)}
+        ${managerCard(data)}
     
     </body>
     

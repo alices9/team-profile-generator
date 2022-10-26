@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const generateHTML = require("./generateHTML");
-const { create } = require("domain");
+
 
 function TeamManager(name, id, email, number){
     this.name = name;
@@ -24,8 +24,10 @@ function Intern(name, id, email, number){
     this.number = number;
 }
 
+const teamMembers = [];
+let team = false;
 
-// Manager questions
+// Questions for Manager
 function createManager() {
     inquirer.prompt([
     {
@@ -50,12 +52,12 @@ function createManager() {
     }])
     .then((answers => {
         const teamManager = new TeamManager(answers.teamManagerName, answers.teamManagerID, answers.teamManagerEmail, answers.teamManagerNum);
-        console.log(teamManager)
+        teamMembers.push(teamManager)
         otherTeamMembers();
     }))
 }
 
-// Questions for the engineer and intern
+// Confirm if adding team members
 function otherTeamMembers(){
     inquirer.prompt([
     {
@@ -64,16 +66,19 @@ function otherTeamMembers(){
         choices: ["Engineer", "Intern", "No, I'm done"],
         name: "otherEmployees"
     }])
-    .then((answer) => {
-        if(answer.otherEmployees === "Engineer"){
+    .then((answer => {
+        if(answer.otherEmployees[0] === "Engineer"){
             createEngineer();
-        }else if(answer.otherEmployees === "Intern"){
+        }else if(answer.otherEmployees[0] === "Intern"){
             createIntern();
-        }else return
-    })
+        }else{
+            team = true;
+            return team;
+        }
+    }))
 }
     
-    
+// Questions for Engineer
 function createEngineer(){
     inquirer.prompt([
     {
@@ -96,10 +101,15 @@ function createEngineer(){
         message: "Please enter the engineer's office number: ",
         name: "engineerNum",
     }])
+    .then((answers => {
+        const engineer = new Engineer(answers.engineerName, answers.engineerID, answers.engineerEmail, answers.engineerNum);
+        teamMembers.push(engineer)
+        otherTeamMembers();
+    }))
 }
 
 
-
+// Questions for Intern
 function createIntern() {
     inquirer.prompt([
     {
@@ -122,6 +132,11 @@ function createIntern() {
         message: "Please enter the intern's office number: ",
         name: "internNum",
     }])
+    .then((answers => {
+        const intern = new Intern(answers.internName, answers.internID, answers.internEmail, answers.internNum);
+        teamMembers.push(intern)
+        otherTeamMembers();
+    }))
 }
 
 
@@ -130,9 +145,12 @@ function writeToFile(fileName, data) {
     err ? console.log(err) : console.log("Success!"))
 }
 
-function init() {
-    createManager();
-    writeToFile(("./dist/test.html"), generateHTML(answers2));
+
+function check(){
+    if (team) writeToFile(("./dist/test.html"), generateHTML(teamMembers));
 }
 
+
+
 createManager()
+check()
