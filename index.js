@@ -73,9 +73,14 @@ function otherTeamMembers(){
             createIntern();
         }else{
             team = true;
+            console.log(teamMembers)
             return team;
         }
     }))
+    .then (() => {
+        if (team) {
+        writeFile(("./dist/test.html"), generateHTML(teamMembers));
+    }})
 }
     
 // Questions for Engineer
@@ -98,8 +103,8 @@ function createEngineer(){
     },
     {
         type: "input",
-        message: "Please enter the engineer's office number: ",
-        name: "engineerNum",
+        message: "Please enter the engineer's GitHub username: ",
+        name: "engineerGitHub",
     }])
     .then((answers => {
         const engineer = new Engineer(answers.engineerName, answers.engineerID, answers.engineerEmail, answers.engineerNum);
@@ -129,8 +134,8 @@ function createIntern() {
     },
     {
         type: "input",
-        message: "Please enter the intern's office number: ",
-        name: "internNum",
+        message: "Please enter the intern's school name: ",
+        name: "internSchool",
     }])
     .then((answers => {
         const intern = new Intern(answers.internName, answers.internID, answers.internEmail, answers.internNum);
@@ -140,17 +145,20 @@ function createIntern() {
 }
 
 
-function writeToFile(fileName, data) {
-    fs.writeFile(fileName, data, (err) =>
+function writeFile(fileName, data) {
+    fs.writeFileSync(fileName, data, (err) =>
     err ? console.log(err) : console.log("Success!"))
 }
 
 
-function check(){
-    if (team) writeToFile(("./dist/test.html"), generateHTML(teamMembers));
-}
+// function check(){
+//     console.log(team)
+//     if (team) {
+//         writeFile(("./dist/test.html"), generateHTML(teamMembers));
+//     }
+// }
 
 
 
 createManager()
-check()
+// check()
